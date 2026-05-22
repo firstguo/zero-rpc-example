@@ -1,0 +1,3 @@
+[submodule "buf_proto_example"]
+	path = buf_proto_example
+	url = https://github.com/firstguo/buf_proto_example
