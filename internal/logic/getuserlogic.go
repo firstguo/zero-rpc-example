@@ -3,7 +3,7 @@ package logic
 import (
 	"context"
 
-	example "zero-rpc-example/buf_proto_example/gen/go/example/v1"
+	user "zero-rpc-example/buf_proto_example/gen/go/base/svr/user/v1"
 	"zero-rpc-example/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -23,8 +23,8 @@ func NewGetUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserLo
 	}
 }
 
-func (l *GetUserLogic) GetUser(in *example.GetUserRequest) (*example.GetUserResponse, error) {
+func (l *GetUserLogic) GetUser(in *user.GetUserRequest) (*user.GetUserResponse, error) {
 	// todo: add your logic here and delete this line
 
-	return &example.GetUserResponse{}, nil
+	return &user.GetUserResponse{}, nil
 }

@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	example "zero-rpc-example/buf_proto_example/gen/go/example/v1"
+	user "zero-rpc-example/buf_proto_example/gen/go/base/svr/user/v1"
 	"zero-rpc-example/internal/config"
 	"zero-rpc-example/internal/server"
 	"zero-rpc-example/internal/svc"
@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-var configFile = flag.String("f", "etc/example.example.yaml", "the config file")
+var configFile = flag.String("f", "etc/example.base.svr.user.user.yaml", "the config file")
 
 func main() {
 	flag.Parse()
@@ -26,7 +26,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		example.RegisterUserServiceServer(grpcServer, server.NewUserServiceServer(ctx))
+		user.RegisterUserServiceServer(grpcServer, server.NewUserServiceServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

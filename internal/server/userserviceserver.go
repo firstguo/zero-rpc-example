@@ -7,14 +7,14 @@ package server
 import (
 	"context"
 
-	example "zero-rpc-example/buf_proto_example/gen/go/example/v1"
+	user "zero-rpc-example/buf_proto_example/gen/go/base/svr/user/v1"
 	"zero-rpc-example/internal/logic"
 	"zero-rpc-example/internal/svc"
 )
 
 type UserServiceServer struct {
 	svcCtx *svc.ServiceContext
-	example.UnimplementedUserServiceServer
+	user.UnimplementedUserServiceServer
 }
 
 func NewUserServiceServer(svcCtx *svc.ServiceContext) *UserServiceServer {
@@ -23,7 +23,7 @@ func NewUserServiceServer(svcCtx *svc.ServiceContext) *UserServiceServer {
 	}
 }
 
-func (s *UserServiceServer) GetUser(ctx context.Context, in *example.GetUserRequest) (*example.GetUserResponse, error) {
+func (s *UserServiceServer) GetUser(ctx context.Context, in *user.GetUserRequest) (*user.GetUserResponse, error) {
 	l := logic.NewGetUserLogic(ctx, s.svcCtx)
 	return l.GetUser(in)
 }

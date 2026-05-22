@@ -7,16 +7,16 @@ package userservice
 import (
 	"context"
 
-	example "zero-rpc-example/buf_proto_example/gen/go/example/v1"
+	user "zero-rpc-example/buf_proto_example/gen/go/base/svr/user/v1"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
 
 type (
-	GetUserRequest  = example.GetUserRequest
-	GetUserResponse = example.GetUserResponse
-	User            = example.User
+	GetUserRequest  = user.GetUserRequest
+	GetUserResponse = user.GetUserResponse
+	User            = user.User
 
 	UserService interface {
 		GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
@@ -34,6 +34,6 @@ func NewUserService(cli zrpc.Client) UserService {
 }
 
 func (m *defaultUserService) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	client := example.NewUserServiceClient(m.cli.Conn())
+	client := user.NewUserServiceClient(m.cli.Conn())
 	return client.GetUser(ctx, in, opts...)
 }
