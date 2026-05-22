@@ -3,7 +3,7 @@ package logic
 import (
 	"context"
 
-	user "zero-rpc-example/buf_proto_example/gen/go/base/svr/user/v1"
+	user "zero-rpc-example/buf_proto_example/gen/go/example/base/svr/user/v1"
 	"zero-rpc-example/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"

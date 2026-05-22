@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	user "zero-rpc-example/buf_proto_example/gen/go/base/svr/user/v1"
+	user "zero-rpc-example/buf_proto_example/gen/go/example/base/svr/user/v1"
 	"zero-rpc-example/internal/config"
 	"zero-rpc-example/internal/server"
 	"zero-rpc-example/internal/svc"
@@ -26,7 +26,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		user.RegisterUserServiceServer(grpcServer, server.NewUserServiceServer(ctx))
+		user.RegisterUserServer(grpcServer, server.NewUserServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
