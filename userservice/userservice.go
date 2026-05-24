@@ -2,12 +2,12 @@
 // goctl 1.10.1
 // Source: user.proto
 
-package user
+package userservice
 
 import (
 	"context"
 
-	user "zero-rpc-example/buf_proto_example/gen/go/example/base/svr/user/v1"
+	user "zero-rpc-example/buf_proto_example/gen/go/tripo/user/v1"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
@@ -18,22 +18,22 @@ type (
 	GetUserResponse = user.GetUserResponse
 	UserInfo        = user.UserInfo
 
-	User interface {
+	UserService interface {
 		GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	}
 
-	defaultUser struct {
+	defaultUserService struct {
 		cli zrpc.Client
 	}
 )
 
-func NewUser(cli zrpc.Client) User {
-	return &defaultUser{
+func NewUserService(cli zrpc.Client) UserService {
+	return &defaultUserService{
 		cli: cli,
 	}
 }
 
-func (m *defaultUser) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	client := user.NewUserClient(m.cli.Conn())
+func (m *defaultUserService) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	client := user.NewUserServiceClient(m.cli.Conn())
 	return client.GetUser(ctx, in, opts...)
 }
