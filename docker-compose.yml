@@ -1,0 +1,86 @@
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.17
+    container_name: etcd
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    command:
+      - etcd
+      - --name=etcd0
+      - --advertise-client-urls=http://0.0.0.0:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+    volumes:
+      - etcd_data:/etcd-data
+
+  etcdkeeper:
+    image: evildecay/etcdkeeper:latest
+    container_name: etcdkeeper
+    ports:
+      - "8000:8080"
+    command: /etcdkeeper/etcdkeeper -h 0.0.0.0 -p 8080 -usetls false -sep /
+    depends_on:
+      - etcd
+
+  apollo-db:
+    image: mysql:8.0
+    container_name: apollo-db
+    ports:
+      - "13306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=apollo
+    volumes:
+      - apollo_db_data:/var/lib/mysql
+      - ./sql/apolloconfigdb.sql:/docker-entrypoint-initdb.d/01-apolloconfigdb.sql
+      - ./sql/apolloportaldb.sql:/docker-entrypoint-initdb.d/02-apolloportaldb.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  apollo-configservice:
+    image: apolloconfig/apollo-configservice:2.3.0
+    container_name: apollo-configservice
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://apollo-db:3306/ApolloConfigDB?characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=apollo
+    depends_on:
+      apollo-db:
+        condition: service_healthy
+
+  apollo-adminservice:
+    image: apolloconfig/apollo-adminservice:2.3.0
+    container_name: apollo-adminservice
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://apollo-db:3306/ApolloConfigDB?characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=apollo
+    depends_on:
+      apollo-db:
+        condition: service_healthy
+
+  apollo-portal:
+    image: apolloconfig/apollo-portal:2.3.0
+    container_name: apollo-portal
+    ports:
+      - "8070:8070"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://apollo-db:3306/ApolloPortalDB?characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=apollo
+      - APOLLO_PORTAL_ENVS=dev
+      - DEV_META=http://apollo-configservice:8080
+    depends_on:
+      apollo-db:
+        condition: service_healthy
+
+volumes:
+  etcd_data:
+  apollo_db_data:

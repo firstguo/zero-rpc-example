@@ -66,7 +66,7 @@ func (b *tagP2cPickerBuilder) Build(info base.PickerBuildInfo) balancer.Picker {
 			addr:    connInfo.Address,
 			conn:    conn,
 			success: initSuccess,
-			tags:    parseAddrTags(connInfo.Address.Addr),
+			tags:    metaToValues(MetaFromAddress(connInfo.Address)),
 		})
 	}
 
@@ -77,13 +77,14 @@ func (b *tagP2cPickerBuilder) Build(info base.PickerBuildInfo) balancer.Picker {
 	}
 }
 
-// parseAddrTags extracts query parameters from "host:port?k1=v1&k2=v2"
-func parseAddrTags(addr string) url.Values {
-	idx := strings.IndexByte(addr, '?')
-	if idx < 0 {
+func metaToValues(meta map[string]string) url.Values {
+	if len(meta) == 0 {
 		return nil
 	}
-	values, _ := url.ParseQuery(addr[idx+1:])
+	values := make(url.Values)
+	for k, v := range meta {
+		values.Set(k, v)
+	}
 	return values
 }
 
