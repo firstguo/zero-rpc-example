@@ -12,12 +12,16 @@ const JSONCodecName = "json"
 
 type jsonCodec struct{}
 
+var marshalOptions = protojson.MarshalOptions{
+	EmitDefaultValues: true,
+}
+
 func (c *jsonCodec) Marshal(v any) ([]byte, error) {
 	m, ok := v.(proto.Message)
 	if !ok {
 		return nil, fmt.Errorf("jsonCodec: Marshal expects proto.Message, got %T", v)
 	}
-	return protojson.Marshal(m)
+	return marshalOptions.Marshal(m)
 }
 
 func (c *jsonCodec) Unmarshal(data []byte, v any) error {
