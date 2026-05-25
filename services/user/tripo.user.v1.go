@@ -11,7 +11,6 @@ import (
 	"zero-rpc-example/services/user/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/core/discov"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
@@ -30,9 +29,6 @@ func main() {
 	common.ApplyEnvAndTagRouting(&c.RpcServerConf, c.Meta)
 	ctx := svc.NewServiceContext(c)
 
-	etcdConf := c.RpcServerConf.Etcd
-	c.RpcServerConf.Etcd = discov.EtcdConf{}
-
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		user.RegisterUserServiceServer(grpcServer, server.NewUserServiceServer(ctx))
 
@@ -42,8 +38,7 @@ func main() {
 	})
 	defer s.Stop()
 
-	c.RpcServerConf.Etcd = etcdConf
-	cleanup := common.RegisterServiceJSON(c.RpcServerConf, c.Meta)
+	cleanup := common.HookServerRegistration(s, c.RpcServerConf, c.Meta)
 	defer cleanup()
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
